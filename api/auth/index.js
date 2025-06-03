@@ -7,7 +7,6 @@ export default function handler(req, res) {
     return res.status(400).json({ error: 'Missing parameters' });
   }
 
-  // Partner key segura (fixa no servidor)
   const partner_key = '4f415055726e715a63554872747673427a5373646244726e5841694874587666';
 
   try {
