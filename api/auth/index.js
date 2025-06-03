@@ -1,1 +1,28 @@
+const crypto = require('crypto');
+
+export default async function handler(req, res) {
+  try {
+    const { partner_id, partner_key, redirect_uri } = req.query;
+
+    if (!partner_id || !partner_key || !redirect_uri) {
+      return res.status(400).json({ error: 'Missing parameters' });
+    }
+
+    const timestamp = Math.floor(Date.now() / 1000);
+    const path = '/api/v2/shop/auth_partner';
+    const baseString = `${partner_id}${path}${timestamp}`;
+
+    const hmac = crypto.createHmac('sha256', Buffer.from(partner_key, 'hex'));
+    const sign = hmac.update(baseString).digest('hex');
+
+    const authUrl = `https://partner.shopeemobile.com/api/v2/shop/auth_partner?partner_id=${partner_id}&timestamp=${timestamp}&sign=${sign}&redirect=${encodeURIComponent(redirect_uri)}`;
+
+    return res.redirect(authUrl);
+  } catch (error) {
+    return res.status(500).json({
+      error: 'Internal Server Error',
+      message: error.message,
+    });
+  }
+}
 
