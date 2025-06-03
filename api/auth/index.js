@@ -12,9 +12,8 @@ export default function handler(req, res) {
     const path = '/api/v2/shop/auth_partner';
     const baseString = `${partner_id}${path}${timestamp}`;
 
-    // NÃO usar Buffer.from(..., 'hex') nem 'utf-8'
     const sign = crypto
-      .createHmac('sha256', partner_key)
+      .createHmac('sha256', Buffer.from(partner_key, 'hex'))
       .update(baseString)
       .digest('hex');
 
@@ -24,7 +23,7 @@ export default function handler(req, res) {
   } catch (err) {
     return res.status(500).json({
       error: 'sign generation failed',
-      message: err.message
+      message: err.message,
     });
   }
 }
