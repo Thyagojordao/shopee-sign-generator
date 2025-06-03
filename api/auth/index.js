@@ -10,12 +10,10 @@ export default function handler(req, res) {
   try {
     const timestamp = Math.floor(Date.now() / 1000);
     const path = '/api/v2/shop/auth_partner';
-    const baseString = `${partner_id}${path}${timestamp}`.trim();
+    const baseString = `${partner_id}${path}${timestamp}`;
 
-    const keyBuffer = Buffer.from(partner_key.trim(), 'hex');
-    const sign = crypto.createHmac('sha256', keyBuffer)
-                       .update(baseString)
-                       .digest('hex');
+    const hmac = crypto.createHmac('sha256', Buffer.from(partner_key, 'utf-8'));
+    const sign = hmac.update(baseString).digest('hex');
 
     const authUrl = `https://partner.shopeemobile.com/api/v2/shop/auth_partner?partner_id=${partner_id}&timestamp=${timestamp}&sign=${sign}&redirect=${encodeURIComponent(redirect_uri)}`;
 
@@ -27,3 +25,4 @@ export default function handler(req, res) {
     });
   }
 }
+
